@@ -5,11 +5,12 @@ import type { UIMessage } from "ai";
 import type { ChatMessageMetadata } from "@/lib/types";
 import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
-import { BookOpen, Menu } from "lucide-react";
+import { BookOpen, Menu, RotateCcw } from "lucide-react";
 
 interface ChatPanelProps {
   messages: UIMessage<ChatMessageMetadata>[];
   onSend: (text: string) => void;
+  onClear: () => void;
   isLoading: boolean;
   bookTitle: string;
   onToggleSidebar?: () => void;
@@ -18,6 +19,7 @@ interface ChatPanelProps {
 export function ChatPanel({
   messages,
   onSend,
+  onClear,
   isLoading,
   bookTitle,
   onToggleSidebar,
@@ -32,16 +34,28 @@ export function ChatPanel({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Mobile header */}
-      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-200 bg-white md:hidden">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-200 bg-white">
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="p-1.5 -ml-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+          className="p-1.5 -ml-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 md:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="font-medium text-gray-800 truncate text-sm">{bookTitle}</span>
+        <span className="font-medium text-gray-800 truncate text-sm md:hidden">{bookTitle}</span>
+        <div className="flex-1" />
+        {messages.length > 0 && (
+          <button
+            type="button"
+            onClick={onClear}
+            disabled={isLoading}
+            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            title="New conversation"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Messages area */}

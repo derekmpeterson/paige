@@ -24,7 +24,7 @@ export function AppShell() {
     return Math.round((chapterEnd / book.totalCharacters) * 100);
   }, [book, currentChapterIndex]);
 
-  const { messages, sendMessage, status } = useChat<UIMessage<ChatMessageMetadata>>({ transport });
+  const { messages, setMessages, sendMessage, status } = useChat<UIMessage<ChatMessageMetadata>>({ transport });
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -76,6 +76,7 @@ export function AppShell() {
         <ChatPanel
           messages={messages}
           onSend={handleSend}
+          onClear={() => setMessages([])}
           isLoading={isLoading}
           bookTitle={book.title}
           onToggleSidebar={() => setSidebarOpen((o) => !o)}
