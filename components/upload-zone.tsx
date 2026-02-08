@@ -69,7 +69,7 @@ export function UploadZone({ onBookParsed }: UploadZoneProps) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <BookOpen className="h-8 w-8 text-amber-600" />

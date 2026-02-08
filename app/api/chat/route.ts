@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   );
 
   const result = streamText({
-    model: openrouter("google/gemini-2.5-flash-lite"),
+    model: openrouter("x-ai/grok-4.1-fast"),
     system,
     messages: await convertToModelMessages(messages),
   });
