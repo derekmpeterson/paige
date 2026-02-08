@@ -4,6 +4,8 @@ import { join } from "path";
 import { randomUUID } from "crypto";
 import { tmpdir } from "os";
 import { parseEpub } from "@/lib/epub-parser";
+import { storeBook } from "@/lib/book-store";
+import type { BookMeta } from "@/lib/types";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -29,7 +31,24 @@ export async function POST(request: Request) {
     await writeFile(tempPath, buffer);
 
     const book = await parseEpub(tempPath);
-    return NextResponse.json(book);
+    const bookId = storeBook(book);
+
+    const meta: BookMeta = {
+      bookId,
+      title: book.title,
+      author: book.author,
+      totalCharacters: book.totalCharacters,
+      totalTokens: book.totalTokens,
+      chapters: book.chapters.map((c) => ({
+        id: c.id,
+        title: c.title,
+        charOffset: c.charOffset,
+        charLength: c.charLength,
+        tokenCount: c.tokenCount,
+      })),
+    };
+
+    return NextResponse.json(meta);
   } catch (error) {
     console.error("Epub parsing error:", error);
     return NextResponse.json(

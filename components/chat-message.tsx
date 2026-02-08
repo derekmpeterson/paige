@@ -2,6 +2,7 @@
 
 import type { UIMessage } from "ai";
 import { BookOpen, User } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessageProps {
   message: UIMessage;
@@ -28,10 +29,14 @@ export function ChatMessage({ message }: ChatMessageProps) {
           }
         `}
       >
-        <div className="whitespace-pre-wrap text-sm leading-relaxed">
+        <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-headings:my-2">
           {message.parts.map((part, i) => {
             if (part.type === "text") {
-              return <span key={i}>{part.text}</span>;
+              return isUser ? (
+                <span key={i} className="whitespace-pre-wrap">{part.text}</span>
+              ) : (
+                <ReactMarkdown key={i}>{part.text}</ReactMarkdown>
+              );
             }
             return null;
           })}

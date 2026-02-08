@@ -1,7 +1,7 @@
 import type { ParsedBook } from "./types";
 
 const CHARS_PER_TOKEN = 4;
-const MAX_CONTEXT_TOKENS = 120_000;
+const MAX_CONTEXT_TOKENS = 1_000_000;
 const MAX_CONTEXT_CHARS = MAX_CONTEXT_TOKENS * CHARS_PER_TOKEN;
 
 export function getTextUpToPercent(book: ParsedBook, percent: number): string {

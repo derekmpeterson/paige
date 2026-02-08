@@ -1,6 +1,9 @@
 import EPub from "epub2";
 import { convert } from "html-to-text";
+import { encodingForModel } from "js-tiktoken";
 import type { BookChapter, ParsedBook } from "./types";
+
+const enc = encodingForModel("gpt-4o");
 
 /** Pull the first h1–h3 text from raw HTML to use as a section title. */
 function extractHeading(html: string): string | null {
@@ -171,12 +174,15 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
         ` → ${JSON.stringify(sectionTitle)}`
       );
 
+      const tokenCount = enc.encode(text).length;
+
       chapters.push({
         id: chapter.id,
         title: sectionTitle,
         text,
         charOffset: cumulativeOffset,
         charLength: text.length,
+        tokenCount,
       });
 
       cumulativeOffset += text.length;
@@ -186,10 +192,13 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
     }
   }
 
+  const totalTokens = chapters.reduce((sum, c) => sum + c.tokenCount, 0);
+
   return {
     title,
     author,
     totalCharacters: cumulativeOffset,
+    totalTokens,
     chapters,
   };
 }

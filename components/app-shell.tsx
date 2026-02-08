@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import type { ParsedBook } from "@/lib/types";
+import type { BookMeta } from "@/lib/types";
 import { UploadZone } from "./upload-zone";
 import { BookSidebar } from "./book-sidebar";
 import { ChatPanel } from "./chat-panel";
@@ -13,7 +13,7 @@ const transport = new DefaultChatTransport({
 });
 
 export function AppShell() {
-  const [book, setBook] = useState<ParsedBook | null>(null);
+  const [book, setBook] = useState<BookMeta | null>(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
 
   const progressPercent = useMemo(() => {
@@ -34,7 +34,7 @@ export function AppShell() {
         { text },
         {
           body: {
-            book,
+            bookId: book.bookId,
             progressPercent,
           },
         }
@@ -44,7 +44,7 @@ export function AppShell() {
   );
 
   if (!book) {
-    return <UploadZone onBookParsed={(b) => setBook(b as ParsedBook)} />;
+    return <UploadZone onBookParsed={(b) => setBook(b as BookMeta)} />;
   }
 
   return (

@@ -1,11 +1,11 @@
 "use client";
 
-import type { ParsedBook } from "@/lib/types";
+import type { BookMeta } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookOpen, CheckCircle2, Circle } from "lucide-react";
 
 interface BookSidebarProps {
-  book: ParsedBook;
+  book: BookMeta;
   currentChapterIndex: number;
   onChapterChange: (index: number) => void;
 }
@@ -16,13 +16,13 @@ export function BookSidebar({
   onChapterChange,
 }: BookSidebarProps) {
   const currentChapter = book.chapters[currentChapterIndex];
+  const charsInContext = currentChapter.charOffset + currentChapter.charLength;
   const progressPercent = book.totalCharacters > 0
-    ? Math.round(
-        ((currentChapter.charOffset + currentChapter.charLength) /
-          book.totalCharacters) *
-          100
-      )
+    ? Math.round((charsInContext / book.totalCharacters) * 100)
     : 0;
+  const tokensInContext = book.chapters
+    .slice(0, currentChapterIndex + 1)
+    .reduce((sum, c) => sum + c.tokenCount, 0);
 
   return (
     <div className="w-80 border-r border-gray-200 bg-gray-50 flex flex-col h-full">
@@ -38,9 +38,14 @@ export function BookSidebar({
             </h2>
             <p className="text-sm text-gray-500 truncate">{book.author}</p>
           </div>
-          <span className="text-xs font-medium text-gray-500 bg-gray-200 rounded-full px-2 py-0.5 flex-shrink-0">
-            {progressPercent}%
-          </span>
+          <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+            <span className="text-xs font-medium text-gray-500 bg-gray-200 rounded-full px-2 py-0.5">
+              {progressPercent}%
+            </span>
+            <span className="text-[10px] text-gray-400">
+              {tokensInContext.toLocaleString()} tokens
+            </span>
+          </div>
         </div>
       </div>
 

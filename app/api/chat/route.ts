@@ -2,7 +2,7 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { buildBookContext } from "@/lib/book-context";
 import { buildSystemPrompt } from "@/lib/system-prompt";
-import type { ParsedBook } from "@/lib/types";
+import { getBook } from "@/lib/book-store";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -11,13 +11,21 @@ const openrouter = createOpenRouter({
 export async function POST(req: Request) {
   const {
     messages,
-    book,
+    bookId,
     progressPercent,
   }: {
     messages: UIMessage[];
-    book: ParsedBook;
+    bookId: string;
     progressPercent: number;
   } = await req.json();
+
+  const book = getBook(bookId);
+  if (!book) {
+    return new Response(
+      JSON.stringify({ error: "Book not found — please re-upload" }),
+      { status: 404, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   const bookContext = buildBookContext(book, progressPercent);
   const system = buildSystemPrompt(
@@ -28,7 +36,7 @@ export async function POST(req: Request) {
   );
 
   const result = streamText({
-    model: openrouter("anthropic/claude-sonnet-4"),
+    model: openrouter("google/gemini-2.5-flash-lite"),
     system,
     messages: await convertToModelMessages(messages),
   });
