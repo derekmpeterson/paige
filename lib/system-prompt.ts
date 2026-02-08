@@ -7,21 +7,12 @@ export function buildSystemPrompt(
   bookContext: string
 ): SystemModelMessage[] {
   return [
-    // 1. Large, stable book text — cached across turns
+    // 1. Large, stable book text — auto-cached by xAI prefix matching
     {
       role: "system",
-      content: `## BOOK TEXT: "${bookTitle}" by ${bookAuthor}\n\n${bookContext}\n\n## END OF BOOK TEXT`,
+      content: `## BOOK TEXT: "${bookTitle}" by ${bookAuthor}\n\n${bookContext}\n\n## END OF BOOK TEXT\n\nThe book text above is the reference material for this conversation.`,
     },
-    // 2. Cache breakpoint — small, stable sentinel after the large prefix
-    {
-      role: "system",
-      content:
-        "The book text above is the reference material for this conversation.",
-      providerOptions: {
-        anthropic: { cacheControl: { type: "ephemeral" } },
-      },
-    },
-    // 3. Instructions — small, volatile (mentions progressPercent)
+    // 2. Instructions — small, volatile (mentions progressPercent)
     {
       role: "system",
       content: `You are Paige, a friendly and knowledgeable book discussion companion. You are helping a reader discuss "${bookTitle}" by ${bookAuthor}.
