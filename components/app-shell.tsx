@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import type { BookMeta } from "@/lib/types";
+import { DefaultChatTransport, UIMessage } from "ai";
+import type { BookMeta, ChatMessageMetadata } from "@/lib/types";
 import { UploadZone } from "./upload-zone";
 import { BookSidebar } from "./book-sidebar";
 import { ChatPanel } from "./chat-panel";
@@ -24,7 +24,7 @@ export function AppShell() {
     return Math.round((chapterEnd / book.totalCharacters) * 100);
   }, [book, currentChapterIndex]);
 
-  const { messages, sendMessage, status } = useChat({ transport });
+  const { messages, sendMessage, status } = useChat<UIMessage<ChatMessageMetadata>>({ transport });
 
   const isLoading = status === "streaming" || status === "submitted";
 

@@ -8,6 +8,11 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { buildBookContext } from "@/lib/book-context";
 import { buildSystemPrompt } from "@/lib/system-prompt";
 import { getBook } from "@/lib/book-store";
+import type { ChatMessageMetadata } from "@/lib/types";
+
+// Grok 4.1 Fast pricing (USD per million tokens)
+const INPUT_COST_PER_M = 0.2;
+const OUTPUT_COST_PER_M = 0.5;
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -67,5 +72,20 @@ export async function POST(req: Request) {
     messages: simplifyMessages(modelMessages),
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    messageMetadata: ({ part }): ChatMessageMetadata | undefined => {
+      if (part.type === "finish") {
+        const inputTokens = part.totalUsage.inputTokens ?? 0;
+        const outputTokens = part.totalUsage.outputTokens ?? 0;
+        const totalTokens = part.totalUsage.totalTokens ?? 0;
+        const cost =
+          (inputTokens * INPUT_COST_PER_M + outputTokens * OUTPUT_COST_PER_M) /
+          1_000_000;
+        return {
+          usage: { inputTokens, outputTokens, totalTokens },
+          cost,
+        };
+      }
+    },
+  });
 }

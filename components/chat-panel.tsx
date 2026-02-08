@@ -2,12 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import type { UIMessage } from "ai";
+import type { ChatMessageMetadata } from "@/lib/types";
 import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
 import { BookOpen, Menu } from "lucide-react";
 
 interface ChatPanelProps {
-  messages: UIMessage[];
+  messages: UIMessage<ChatMessageMetadata>[];
   onSend: (text: string) => void;
   isLoading: boolean;
   bookTitle: string;

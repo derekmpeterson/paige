@@ -31,3 +31,8 @@ export interface BookMeta {
   totalTokens: number;
   chapters: BookMetaChapter[];
 }
+
+export interface ChatMessageMetadata {
+  usage?: { inputTokens: number; outputTokens: number; totalTokens: number };
+  cost?: number; // USD
+}
