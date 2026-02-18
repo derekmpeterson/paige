@@ -39,6 +39,7 @@ export function ChatPanel({
         <button
           type="button"
           onClick={onToggleSidebar}
+          aria-label="Open sidebar"
           className="p-1.5 -ml-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 md:hidden"
         >
           <Menu className="h-5 w-5" />
@@ -52,6 +53,7 @@ export function ChatPanel({
             disabled={isLoading}
             className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 disabled:opacity-50"
             title="New conversation"
+            aria-label="New conversation"
           >
             <RotateCcw className="h-4 w-4" />
           </button>

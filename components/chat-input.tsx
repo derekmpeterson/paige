@@ -59,6 +59,7 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps) {
         onClick={handleSubmit}
         disabled={!input.trim() || isLoading}
         size="icon"
+        aria-label="Send message"
         className="rounded-xl bg-amber-600 hover:bg-amber-700 h-10 w-10 flex-shrink-0"
       >
         <Send className="h-4 w-4" />

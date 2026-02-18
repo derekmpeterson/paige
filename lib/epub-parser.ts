@@ -93,9 +93,7 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
   // The TOC often has correct titles even when the spine/flow doesn't.
   const tocById = new Map<string, string>();
   const tocByHref = new Map<string, string>();
-  console.log("=== TOC ENTRIES (epub2 NCX) ===");
   for (const entry of epub.toc ?? []) {
-    console.log(`  TOC: id=${entry.id} href=${entry.href} title=${JSON.stringify(entry.title)}`);
     if (!entry.title) continue;
     if (entry.id) tocById.set(entry.id, entry.title);
     if (entry.href) {
@@ -105,17 +103,11 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
 
   // If epub2's NCX-based TOC is empty, try parsing the EPUB3 nav document
   if (tocByHref.size === 0) {
-    console.log("=== NCX TOC empty, trying EPUB3 nav document ===");
     const navToc = await parseEpub3Nav(epub);
     for (const [href, navTitle] of navToc) {
       tocByHref.set(href, navTitle);
     }
-    console.log(`  EPUB3 nav: found ${navToc.size} entries`);
   }
-
-  console.log(`=== TOC LOOKUP MAPS ===`);
-  console.log(`  tocById (${tocById.size} entries):`, Object.fromEntries(tocById));
-  console.log(`  tocByHref (${tocByHref.size} entries):`, Object.fromEntries(tocByHref));
 
   const chapters: BookChapter[] = [];
   let cumulativeOffset = 0;
@@ -164,15 +156,6 @@ export async function parseEpub(filePath: string): Promise<ParsedBook> {
         imgAltTitle ||
         headingTitle ||
         `Section ${++untitledCount}`;
-      console.log(
-        `SPINE[${chapters.length}]: id=${chapter.id} href=${hrefBase}` +
-        ` | spine=${JSON.stringify(spineTitle)}` +
-        ` | tocId=${JSON.stringify(tocIdTitle)}` +
-        ` | tocHref=${JSON.stringify(tocHrefTitle)}` +
-        ` | imgAlt=${JSON.stringify(imgAltTitle)}` +
-        ` | heading=${JSON.stringify(headingTitle)}` +
-        ` → ${JSON.stringify(sectionTitle)}`
-      );
 
       const tokenCount = enc.encode(text).length;
 

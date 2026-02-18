@@ -10,9 +10,9 @@ import { buildSystemPrompt } from "@/lib/system-prompt";
 import { getBook } from "@/lib/book-store";
 import type { ChatMessageMetadata } from "@/lib/types";
 
-// Grok 4.1 Fast pricing (USD per million tokens)
-const INPUT_COST_PER_M = 0.2;
-const OUTPUT_COST_PER_M = 0.5;
+const MODEL_ID = process.env.MODEL_ID || "x-ai/grok-4.1-fast";
+const INPUT_COST_PER_M = Number(process.env.INPUT_COST_PER_M) || 0.2;
+const OUTPUT_COST_PER_M = Number(process.env.OUTPUT_COST_PER_M) || 0.5;
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -38,6 +38,13 @@ function simplifyMessages(msgs: ModelMessage[]): ModelMessage[] {
 }
 
 export async function POST(req: Request) {
+  if (!process.env.OPENROUTER_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "OPENROUTER_API_KEY is not set" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const {
     messages,
     bookId,
@@ -67,7 +74,7 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: openrouter("x-ai/grok-4.1-fast"),
+    model: openrouter(MODEL_ID),
     system,
     messages: simplifyMessages(modelMessages),
   });
