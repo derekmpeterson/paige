@@ -8,11 +8,10 @@ import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { buildBookContext } from "@/lib/book-context";
 import { buildSystemPrompt } from "@/lib/system-prompt";
 import { getBook } from "@/lib/book-store";
+import { getModelPricing } from "@/lib/model-pricing";
 import type { ChatMessageMetadata } from "@/lib/types";
 
 const MODEL_ID = process.env.MODEL_ID || "x-ai/grok-4.1-fast";
-const INPUT_COST_PER_M = Number(process.env.INPUT_COST_PER_M) || 0.2;
-const OUTPUT_COST_PER_M = Number(process.env.OUTPUT_COST_PER_M) || 0.5;
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -72,6 +71,7 @@ export async function POST(req: Request) {
   );
 
   const modelMessages = await convertToModelMessages(messages);
+  const pricing = await getModelPricing(MODEL_ID);
 
   const result = streamText({
     model: openrouter(MODEL_ID),
@@ -85,9 +85,9 @@ export async function POST(req: Request) {
         const inputTokens = part.totalUsage.inputTokens ?? 0;
         const outputTokens = part.totalUsage.outputTokens ?? 0;
         const totalTokens = part.totalUsage.totalTokens ?? 0;
-        const cost =
-          (inputTokens * INPUT_COST_PER_M + outputTokens * OUTPUT_COST_PER_M) /
-          1_000_000;
+        const cost = pricing
+          ? inputTokens * pricing.prompt + outputTokens * pricing.completion
+          : undefined;
         return {
           usage: { inputTokens, outputTokens, totalTokens },
           cost,

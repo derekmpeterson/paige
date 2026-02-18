@@ -41,15 +41,13 @@ Create a `.env.local` file in the project root:
 OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
-Optionally configure the model and pricing (defaults shown):
+Optionally configure the model (default shown):
 
 ```
 MODEL_ID=x-ai/grok-4.1-fast
-INPUT_COST_PER_M=0.2
-OUTPUT_COST_PER_M=0.5
 ```
 
-`MODEL_ID` is any [OpenRouter model ID](https://openrouter.ai/models). `INPUT_COST_PER_M` and `OUTPUT_COST_PER_M` are USD per million tokens, used for the cost display.
+`MODEL_ID` is any [OpenRouter model ID](https://openrouter.ai/models). Pricing for cost tracking is fetched automatically from the OpenRouter API.
 
 Start the dev server:
 
