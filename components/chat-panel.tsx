@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { UIMessage } from "ai";
 import type { ChatMessageMetadata } from "@/lib/types";
+import { formatCost, formatTokens } from "@/lib/format";
 import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
 import { AlertCircle, BookOpen, Menu, RotateCcw } from "lucide-react";
@@ -28,6 +29,26 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Running conversation totals, summed from per-message metadata.
+  const totals = useMemo(() => {
+    let tokens = 0;
+    let cost = 0;
+    let hasUsage = false;
+    let hasCost = false;
+    for (const message of messages) {
+      const meta = message.metadata;
+      if (meta?.usage) {
+        tokens += meta.usage.totalTokens;
+        hasUsage = true;
+      }
+      if (meta?.cost != null) {
+        cost += meta.cost;
+        hasCost = true;
+      }
+    }
+    return { tokens, cost, hasUsage, hasCost };
+  }, [messages]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -50,6 +71,15 @@ export function ChatPanel({
           {bookTitle}
         </span>
         <div className="flex-1" />
+        {totals.hasUsage && (
+          <span
+            className="text-xs text-gray-400 tabular-nums"
+            title="Conversation total (tokens / cost)"
+          >
+            {formatTokens(totals.tokens)} tokens
+            {totals.hasCost ? ` · ${formatCost(totals.cost)}` : ""}
+          </span>
+        )}
         {messages.length > 0 && (
           <button
             type="button"

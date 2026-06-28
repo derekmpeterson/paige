@@ -33,6 +33,11 @@ export interface BookMeta {
 }
 
 export interface ChatMessageMetadata {
-  usage?: { inputTokens: number; outputTokens: number; totalTokens: number };
-  cost?: number; // USD
+  usage?: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    cachedTokens?: number; // input tokens served from the provider's cache
+  };
+  cost?: number; // USD (provider-reported when available, otherwise estimated)
 }

@@ -29,7 +29,7 @@ const chatRequestSchema = z.object({
 const USE_LOCAL_SERVER = !!process.env.LLAMA_SERVER_URL;
 const MODEL_ID = USE_LOCAL_SERVER
   ? process.env.LLAMA_MODEL_ID || "llama-3.1-8b"
-  : process.env.MODEL_ID || "x-ai/grok-4.1-fast";
+  : process.env.MODEL_ID || "x-ai/grok-4.3";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -118,12 +118,30 @@ export async function POST(req: Request) {
   );
 
   const modelMessages = await convertToModelMessages(messages as UIMessage[]);
-  const pricing = await getModelPricing(MODEL_ID);
+  // Pricing is only used to *estimate* cost when OpenRouter doesn't report it,
+  // so skip the lookup entirely for local servers.
+  const pricing = USE_LOCAL_SERVER ? null : await getModelPricing(MODEL_ID);
+
+  // OpenRouter reports the authoritative, cache-adjusted cost via providerMetadata
+  // on step finish. messageMetadata only sees the `finish` part (no providerMetadata),
+  // so capture it here for use below. Falls back to a per-token estimate.
+  let providerCost: number | undefined;
+  let cachedTokens: number | undefined;
 
   const result = streamText({
-    model: USE_LOCAL_SERVER ? llm.chat(MODEL_ID) : llm(MODEL_ID),
+    model: USE_LOCAL_SERVER
+      ? llm.chat(MODEL_ID)
+      : openrouter(MODEL_ID, { usage: { include: true } }),
     system,
     messages: simplifyMessages(modelMessages),
+    onStepFinish: ({ providerMetadata }) => {
+      const orUsage = providerMetadata?.openrouter?.usage as unknown as
+        | { cost?: number; promptTokensDetails?: { cachedTokens?: number } }
+        | undefined;
+      if (typeof orUsage?.cost === "number") providerCost = orUsage.cost;
+      const cached = orUsage?.promptTokensDetails?.cachedTokens;
+      if (typeof cached === "number") cachedTokens = cached;
+    },
   });
 
   return result.toUIMessageStreamResponse({
@@ -132,12 +150,12 @@ export async function POST(req: Request) {
         const inputTokens = part.totalUsage.inputTokens ?? 0;
         const outputTokens = part.totalUsage.outputTokens ?? 0;
         const totalTokens = part.totalUsage.totalTokens ?? 0;
-        const cost = pricing
+        const estimatedCost = pricing
           ? inputTokens * pricing.prompt + outputTokens * pricing.completion
           : undefined;
         return {
-          usage: { inputTokens, outputTokens, totalTokens },
-          cost,
+          usage: { inputTokens, outputTokens, totalTokens, cachedTokens },
+          cost: providerCost ?? estimatedCost,
         };
       }
     },

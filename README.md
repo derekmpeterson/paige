@@ -18,7 +18,7 @@ Paige is a web app that lets you discuss any book with AI while respecting exact
 
 When you set your progress, Paige sends the full text of every chapter you've read directly into the LLM's context window. There's no RAG, no embeddings, no chunking — the model sees the complete, unbroken text of everything up to your current chapter.
 
-This is an opinionated choice. The upside is that conversations are richer and more grounded, since the model has full access to every detail, callback, and nuance in what you've read. The tradeoff is that longer books use more tokens (and cost more), and very large books may approach context limits. On the cost side, because the book text is a stable prefix at the start of every request, it's compatible with prompt caching — so after the first message in a conversation, subsequent messages benefit from discounted cached token pricing.
+This is an opinionated choice. The upside is that conversations are richer and more grounded, since the model has full access to every detail, callback, and nuance in what you've read. The tradeoff is that longer books use more tokens (and cost more), and very large books may approach context limits. On the cost side, because the book text is a stable prefix at the start of every request, it's compatible with prompt caching — so after the first message in a conversation, subsequent messages benefit from discounted cached token pricing. The per-message cost shown in the app is the actual amount OpenRouter charges, so that caching discount is reflected automatically (hover a reply to see its cost and how many input tokens were cached).
 
 ## Getting Started
 
@@ -44,7 +44,7 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 Optionally configure the model (default shown):
 
 ```
-MODEL_ID=x-ai/grok-4.1-fast
+MODEL_ID=x-ai/grok-4.3
 ```
 
 `MODEL_ID` is any [OpenRouter model ID](https://openrouter.ai/models) (Grok is just the default). Pricing for cost tracking is fetched automatically from the OpenRouter API.
