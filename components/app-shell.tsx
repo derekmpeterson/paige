@@ -24,7 +24,9 @@ export function AppShell() {
     return Math.round((chapterEnd / book.totalCharacters) * 100);
   }, [book, currentChapterIndex]);
 
-  const { messages, setMessages, sendMessage, status } = useChat<UIMessage<ChatMessageMetadata>>({ transport });
+  const { messages, setMessages, sendMessage, status, error } = useChat<
+    UIMessage<ChatMessageMetadata>
+  >({ transport });
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -44,13 +46,10 @@ export function AppShell() {
     [book, progressPercent, sendMessage]
   );
 
-  const handleChapterChange = useCallback(
-    (index: number) => {
-      setCurrentChapterIndex(index);
-      setSidebarOpen(false);
-    },
-    []
-  );
+  const handleChapterChange = useCallback((index: number) => {
+    setCurrentChapterIndex(index);
+    setSidebarOpen(false);
+  }, []);
 
   if (!book) {
     return <UploadZone onBookParsed={(b) => setBook(b as BookMeta)} />;
@@ -78,6 +77,7 @@ export function AppShell() {
           onSend={handleSend}
           onClear={() => setMessages([])}
           isLoading={isLoading}
+          error={error}
           bookTitle={book.title}
           onToggleSidebar={() => setSidebarOpen((o) => !o)}
         />

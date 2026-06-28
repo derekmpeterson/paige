@@ -6,7 +6,10 @@ export interface ModelPricing {
 let fetchPromise: Promise<Map<string, ModelPricing>> | null = null;
 
 async function fetchPricingMap(): Promise<Map<string, ModelPricing>> {
-  const res = await fetch("https://openrouter.ai/api/v1/models");
+  const res = await fetch("https://openrouter.ai/api/v1/models", {
+    // Don't let a slow/unreachable OpenRouter hang the first chat request.
+    signal: AbortSignal.timeout(8000),
+  });
   if (!res.ok) throw new Error(`OpenRouter /models: ${res.status}`);
   const { data } = await res.json();
   const map = new Map<string, ModelPricing>();

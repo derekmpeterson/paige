@@ -6,16 +6,19 @@ import type { BookChapter, ParsedBook } from "./types";
 const enc = encodingForModel("gpt-4o");
 
 /** Pull the first h1–h3 text from raw HTML to use as a section title. */
-function extractHeading(html: string): string | null {
+export function extractHeading(html: string): string | null {
   const match = html.match(/<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/i);
   if (!match) return null;
   // Strip inner tags and collapse whitespace
-  const text = match[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  const text = match[1]
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
   return text.length > 0 ? text : null;
 }
 
 /** Pull alt text from the first <img> with a non-empty alt attribute. */
-function extractImgAlt(html: string): string | null {
+export function extractImgAlt(html: string): string | null {
   const match = html.match(/<img[^>]*\balt="([^"]+)"[^>]*>/i);
   if (!match) return null;
   const alt = match[1].trim();
@@ -27,9 +30,7 @@ function extractImgAlt(html: string): string | null {
  * epub2 only parses NCX, so we parse the nav document ourselves.
  * Returns a map of href (without fragment) → title.
  */
-async function parseEpub3Nav(
-  epub: EPub
-): Promise<Map<string, string>> {
+async function parseEpub3Nav(epub: EPub): Promise<Map<string, string>> {
   const tocByHref = new Map<string, string>();
 
   // Find the nav document in the manifest — look for id or href containing "nav"
@@ -68,10 +69,11 @@ async function parseEpub3Nav(
   let match;
   while ((match = linkRegex.exec(navMatch[1])) !== null) {
     // Strip fragment, then strip epub2's /links/<id>/ rewrite prefix
-    const href = match[1]
-      .replace(/#.*$/, "")
-      .replace(/^\/links\/[^/]+\//, "");
-    const linkTitle = match[2].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    const href = match[1].replace(/#.*$/, "").replace(/^\/links\/[^/]+\//, "");
+    const linkTitle = match[2]
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
     if (href && linkTitle) {
       // Only keep the first TOC entry per href (some books split chapters)
       if (!tocByHref.has(href)) {

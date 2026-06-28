@@ -7,6 +7,9 @@ import { parseEpub } from "@/lib/epub-parser";
 import { storeBook } from "@/lib/book-store";
 import type { BookMeta } from "@/lib/types";
 
+// Guard against accidental huge uploads exhausting memory/disk.
+const MAX_EPUB_BYTES = 50 * 1024 * 1024; // 50 MB
+
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get("epub") as File | null;
@@ -19,6 +22,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "File must be an .epub" },
       { status: 400 }
+    );
+  }
+
+  if (file.size > MAX_EPUB_BYTES) {
+    return NextResponse.json(
+      { error: "File is too large (max 50 MB)" },
+      { status: 413 }
     );
   }
 

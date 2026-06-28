@@ -6,7 +6,9 @@ import { BookOpen, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 function formatTokens(n: number): string {
-  return n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k` : String(n);
+  return n >= 1000
+    ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`
+    : String(n);
 }
 
 interface ChatMessageProps {
@@ -29,7 +31,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
               <span className="font-semibold">${meta.cost.toFixed(4)}</span>
               {meta.usage && (
                 <span className="ml-2 text-gray-400">
-                  {formatTokens(meta.usage.inputTokens)} in / {formatTokens(meta.usage.outputTokens)} out
+                  {formatTokens(meta.usage.inputTokens)} in /{" "}
+                  {formatTokens(meta.usage.outputTokens)} out
                 </span>
               )}
             </div>
@@ -47,11 +50,15 @@ export function ChatMessage({ message }: ChatMessageProps) {
           }
         `}
       >
-        <div className={`text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-headings:my-2 ${isUser ? "prose-invert" : ""}`}>
+        <div
+          className={`text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-headings:my-2 ${isUser ? "prose-invert" : ""}`}
+        >
           {message.parts.map((part, i) => {
             if (part.type === "text") {
               return isUser ? (
-                <span key={i} className="whitespace-pre-wrap">{part.text}</span>
+                <span key={i} className="whitespace-pre-wrap">
+                  {part.text}
+                </span>
               ) : (
                 <ReactMarkdown key={i}>{part.text}</ReactMarkdown>
               );

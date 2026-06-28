@@ -120,17 +120,13 @@ export function UploadZone({ onBookParsed }: UploadZoneProps) {
               <p className="text-gray-600 font-medium">
                 Drop your epub here, or click to browse
               </p>
-              <p className="text-gray-400 text-sm mt-1">
-                Supports .epub files
-              </p>
+              <p className="text-gray-400 text-sm mt-1">Supports .epub files</p>
             </div>
           </>
         )}
       </div>
 
-      {error && (
-        <p className="mt-4 text-red-500 text-sm">{error}</p>
-      )}
+      {error && <p className="mt-4 text-red-500 text-sm">{error}</p>}
     </div>
   );
 }

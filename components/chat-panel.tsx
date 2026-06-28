@@ -5,13 +5,14 @@ import type { UIMessage } from "ai";
 import type { ChatMessageMetadata } from "@/lib/types";
 import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
-import { BookOpen, Menu, RotateCcw } from "lucide-react";
+import { AlertCircle, BookOpen, Menu, RotateCcw } from "lucide-react";
 
 interface ChatPanelProps {
   messages: UIMessage<ChatMessageMetadata>[];
   onSend: (text: string) => void;
   onClear: () => void;
   isLoading: boolean;
+  error?: Error;
   bookTitle: string;
   onToggleSidebar?: () => void;
 }
@@ -21,6 +22,7 @@ export function ChatPanel({
   onSend,
   onClear,
   isLoading,
+  error,
   bookTitle,
   onToggleSidebar,
 }: ChatPanelProps) {
@@ -44,7 +46,9 @@ export function ChatPanel({
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="font-medium text-gray-800 truncate text-sm md:hidden">{bookTitle}</span>
+        <span className="font-medium text-gray-800 truncate text-sm md:hidden">
+          {bookTitle}
+        </span>
         <div className="flex-1" />
         {messages.length > 0 && (
           <button
@@ -71,8 +75,9 @@ export function ChatPanel({
               Hi! I&apos;m Paige
             </h2>
             <p className="text-gray-500 max-w-sm">
-              I&apos;m here to discuss <span className="font-medium">{bookTitle}</span> with you
-              — without any spoilers. Set your reading progress and ask me
+              I&apos;m here to discuss{" "}
+              <span className="font-medium">{bookTitle}</span> with you —
+              without any spoilers. Set your reading progress and ask me
               anything!
             </p>
           </div>
@@ -98,6 +103,18 @@ export function ChatPanel({
               </div>
             </div>
           )}
+
+        {error && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+            <span>
+              {error.message || "Something went wrong. Please try again."}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Input */}

@@ -2,23 +2,46 @@
   "name": "paige",
   "version": "1.0.0",
   "description": "Chat about your books without spoilers",
+  "keywords": [
+    "epub",
+    "ebook",
+    "ai",
+    "chatbot",
+    "spoiler-free",
+    "reading",
+    "openrouter",
+    "llm",
+    "nextjs"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/derekmpeterson/paige.git"
   },
+  "homepage": "https://github.com/derekmpeterson/paige#readme",
+  "bugs": {
+    "url": "https://github.com/derekmpeterson/paige/issues"
+  },
   "author": "Derek Peterson",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
     "@ai-sdk/react": "^3.0.79",
     "@openrouter/ai-sdk-provider": "^2.1.1",
     "@radix-ui/react-scroll-area": "^1.2.10",
-    "@radix-ui/react-slider": "^1.3.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/typography": "^0.5.19",
     "ai": "^6.0.77",
@@ -44,7 +67,9 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
     "postcss": "^8.5.6",
+    "prettier": "^3.9.1",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
   }
 }

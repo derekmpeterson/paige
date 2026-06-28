@@ -21,9 +21,10 @@ export function BookSidebar({
 }: BookSidebarProps) {
   const currentChapter = book.chapters[currentChapterIndex];
   const charsInContext = currentChapter.charOffset + currentChapter.charLength;
-  const progressPercent = book.totalCharacters > 0
-    ? Math.round((charsInContext / book.totalCharacters) * 100)
-    : 0;
+  const progressPercent =
+    book.totalCharacters > 0
+      ? Math.round((charsInContext / book.totalCharacters) * 100)
+      : 0;
   const tokensInContext = book.chapters
     .slice(0, currentChapterIndex + 1)
     .reduce((sum, c) => sum + c.tokenCount, 0);
@@ -93,8 +94,8 @@ export function BookSidebar({
                       isCurrent
                         ? "bg-amber-50 text-amber-700 font-medium"
                         : isRead
-                        ? "text-gray-600 hover:bg-gray-100"
-                        : "text-gray-400 hover:bg-gray-100"
+                          ? "text-gray-600 hover:bg-gray-100"
+                          : "text-gray-400 hover:bg-gray-100"
                     }
                   `}
                 >
