@@ -11,7 +11,7 @@ Please **do not** open a public GitHub issue for security vulnerabilities.
 
 Instead, report them privately:
 
-- Email **derek@derekp.com**, or
+- Email **paige-support@derekp.com**, or
 - Use GitHub's [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability)
   ("Report a vulnerability" under the repository's **Security** tab).
 
