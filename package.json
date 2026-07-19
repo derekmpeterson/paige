@@ -40,7 +40,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
     "@ai-sdk/react": "^3.0.79",
-    "@openrouter/ai-sdk-provider": "^2.10.0",
+    "@openrouter/ai-sdk-provider": "^3.0.0",
     "@radix-ui/react-scroll-area": "^1.2.14",
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/typography": "^0.5.20",
